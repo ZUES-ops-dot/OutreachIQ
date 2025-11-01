@@ -1,0 +1,18 @@
+.env
+backend/.env
+backend/.env.local
+frontend/.env
+frontend/.env.local
+
+# Backend build artifacts
+backend/target/
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/.next/
+frontend/.turbo/
+frontend/.vercel
+
+# Misc
+.DS_Store
+Thumbs.db
