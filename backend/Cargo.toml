@@ -1,0 +1,45 @@
+[package]
+name = "outreachiq"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "outreachiq"
+path = "src/lib.rs"
+
+[[bin]]
+name = "outreachiq-api"
+path = "src/main.rs"
+
+[[bin]]
+name = "outreachiq-worker"
+path = "src/bin/worker.rs"
+
+[dependencies]
+actix-web = "4.4"
+actix-cors = "0.7"
+tokio = { version = "1.35", features = ["full"] }
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono", "uuid", "migrate", "rust_decimal"] }
+rust_decimal = { version = "1.33", features = ["serde"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+dotenvy = "0.15"
+reqwest = { version = "0.11", features = ["json"] }
+regex = "1.10"
+trust-dns-resolver = "0.23"
+uuid = { version = "1.6", features = ["v4", "serde"] }
+jsonwebtoken = "9.2"
+argon2 = "0.5"
+validator = { version = "0.16", features = ["derive"] }
+tracing = "0.1"
+tracing-subscriber = "0.3"
+rand = "0.8"
+lettre = { version = "0.11", features = ["tokio1-native-tls", "builder"] }
+handlebars = "5.1"
+aes-gcm = "0.10"
+base64 = "0.21"
+futures-util = "0.3"
+
+[dev-dependencies]
+actix-rt = "2.9"
