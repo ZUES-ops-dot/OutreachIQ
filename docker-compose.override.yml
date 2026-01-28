@@ -1,0 +1,7 @@
+# Local overrides for docker-compose.yml
+# Copy to docker-compose.override.yml and edit as needed
+version: "3.8"
+services:
+  postgres:
+    ports:
+      - "5433:5432"
