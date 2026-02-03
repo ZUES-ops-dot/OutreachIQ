@@ -6,7 +6,7 @@
 ![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=nextdotjs)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-> Multi-tenant cold email platform with encrypted credential storage, inbox warmup, JWT-based access control, Stripe billing, and a Rust async core. Sends 10,000+ verified emails per hour from a single VPS.
+> Multi-tenant cold email platform with encrypted credential storage, inbox warmup, JWT-based access control, Stripe billing, and a Rust async core. Sends 10,000+ verified emails per hour with built-in SMTP rate-limit backoff from a single VPS.
 
 **Live demo:** _coming soon_ · **[Architecture](#architecture)** · **[Quick Start](#quick-start)**
 
