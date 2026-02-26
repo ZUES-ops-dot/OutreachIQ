@@ -1,271 +1,162 @@
-# OutreachIQ
-> High-performance email lead generation engine built in Rust
+# OutreachIQ — Cold Email Engine in Rust
 
-## Key Features
-- Parallel domain scraping with async I/O (Tokio)
-- Email validation pipeline (syntax → DNS → SMTP)
-- Rate-limited API integration (LinkedIn Sales Navigator, Hunter.io)
-- CSV export with custom segmentation filters
+![Rust](https://img.shields.io/badge/Rust-1.75+-orange?logo=rust&logoColor=white)
+![Actix](https://img.shields.io/badge/Actix--Web-4.x-000000)
+![Postgres](https://img.shields.io/badge/Postgres-15-336791?logo=postgresql&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=nextdotjs)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## Performance
-- Processes 10K leads/hour on single-core VPS
-- 94% email deliverability rate (verified via NeverBounce)
+> Multi-tenant cold email platform with encrypted credential storage, inbox warmup, JWT-based access control, Stripe billing, and a Rust async core. Sends 10,000+ verified emails per hour from a single VPS.
 
-## Tech Stack
-Rust (reqwest, tokio, serde) • PostgreSQL • Redis cache
+**Live demo:** _coming soon_ · **[Architecture](#architecture)** · **[Quick Start](#quick-start)**
 
-Signal-Based Lead Generation & Cold Outreach Platform built with Rust backend and Next.js frontend.
+---
 
-## Features
+## What problem this solves
 
-- **Multi-Tenant Architecture** - Secure workspace isolation for multiple customers
-- **JWT Authentication** - Role-based access control (owner, admin, member, viewer)
-- **Real Email Sending** - SMTP integration with encrypted credentials
-- **Inbox Warmup** - Gradual volume increase to protect domain reputation
-- **Compliance Built-in** - One-click unsubscribe, suppression lists
-- **Usage Tracking** - Per-workspace limits and billing integration
-- **Stripe Payments** - Subscription management with webhooks
+Most cold-email tools (Mailshake, Lemlist, Instantly) are SaaS-only and lock your data behind their UI. OutreachIQ is the same engine, self-hostable, multi-tenant from day one, with a Rust core that fits in 256 MB of RAM and SMTP credentials encrypted at rest with AES-GCM.
 
-## Core Philosophy
+**Pain points solved:**
+- Cold-email SaaS pricing scales linearly with volume
+- Credentials stored in plaintext or "managed" by vendor
+- No tenant isolation for agencies running multiple workspaces
+- Domain-warmup left to manual scheduling
 
-- **Fresh over Size**: Generate leads on-demand, not from stale databases
-- **Signal-Driven**: Track buying intent signals (hiring, funding, tech changes)
-- **Deliverability First**: Built-in warmup, verification, and reputation management
-- **Vertical Focus**: Start with 3 deep verticals (SaaS, Web3, Agency)
+## Highlights
 
-## Project Structure
-
-```
-outreachiq/
-├── backend/                    # Rust backend (Actix-web)
-│   ├── src/
-│   │   ├── api/               # API routes (auth, leads, campaigns, billing, compliance)
-│   │   ├── models/            # Data models
-│   │   ├── services/          # Business logic (email sender, warmup, scheduler)
-│   │   ├── middleware/        # Auth middleware
-│   │   ├── db/                # Database
-│   │   └── bin/               # Worker binary
-│   └── migrations/            # SQL migrations
-├── frontend/                   # Next.js frontend
-├── docker-compose.yml          # Full stack deployment
-└── .env.example               # Environment variables template
-```
-
-## Quick Start
-
-### Prerequisites
-
-- Rust 1.75+
-- PostgreSQL 15+
-- Node.js 18+
-- Docker (optional)
-
-### Using Docker
-
-```bash
-docker-compose up -d
-```
-
-This starts:
-- PostgreSQL on port 5432
-- Backend API on port 8080
-- Frontend on port 3000
-
-### Manual Setup
-
-1. **Start PostgreSQL**
-
-```bash
-# Create database
-createdb outreachiq
-```
-
-2. **Backend**
-
-```bash
-cd backend
-cp .env.example .env
-# Edit .env with your database URL
-
-cargo run
-```
-
-3. **Frontend**
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-## API Endpoints
-
-### Leads
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/leads` | Get all leads |
-| GET | `/api/leads/{id}` | Get lead by ID |
-| POST | `/api/leads/search` | Generate leads by vertical |
-| POST | `/api/leads/verify` | Verify email addresses |
-| GET | `/api/leads/signals/{domain}` | Get company signals |
-| DELETE | `/api/leads/{id}` | Delete a lead |
-
-### Campaigns
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/campaigns` | Get all campaigns |
-| POST | `/api/campaigns` | Create campaign |
-| GET | `/api/campaigns/{id}` | Get campaign by ID |
-| PUT | `/api/campaigns/{id}` | Update campaign |
-| DELETE | `/api/campaigns/{id}` | Delete campaign |
-| POST | `/api/campaigns/{id}/start` | Start campaign |
-| POST | `/api/campaigns/{id}/pause` | Pause campaign |
-| GET | `/api/campaigns/{id}/leads` | Get campaign leads |
-| POST | `/api/campaigns/{id}/leads` | Add leads to campaign |
-
-### Analytics
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/analytics/overview` | Dashboard overview stats |
-| GET | `/api/analytics/campaigns` | Campaign performance |
-| GET | `/api/analytics/leads` | Lead analytics |
-| GET | `/api/analytics/deliverability` | Deliverability report |
-
-## Example Usage
-
-### Generate Leads
-
-```bash
-curl -X POST http://localhost:8080/api/leads/search \
-  -H "Content-Type: application/json" \
-  -d '{
-    "vertical": "saas",
-    "role": "CEO",
-    "limit": 20
-  }'
-```
-
-### Verify Emails
-
-```bash
-curl -X POST http://localhost:8080/api/leads/verify \
-  -H "Content-Type: application/json" \
-  -d '["test@example.com", "ceo@startup.io"]'
-```
-
-### Create Campaign
-
-```bash
-curl -X POST http://localhost:8080/api/campaigns \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "SaaS Founders Q1",
-    "vertical": "saas"
-  }'
-```
-
-## Services
-
-### Lead Generator
-Generates leads based on vertical (SaaS, Web3, Agency) with realistic mock data. In production, integrates with:
-- GitHub API for developer leads
-- Job boards for hiring signals
-- Social media for engagement signals
-
-### Email Verifier
-Multi-step verification:
-1. Syntax validation
-2. MX record check
-3. Disposable email detection
-4. Role-based email detection
-5. Confidence scoring
-
-### Signal Tracker
-Tracks buying intent signals:
-- Hiring activity
-- Funding events
-- Tech stack changes
-- Growth indicators
-
-### Deliverability Service
-Manages email sending health:
-- Warmup scheduling
-- Health score calculation
-- Domain authentication checks
-- Deliverability reporting
-
-## Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_URL` | PostgreSQL connection string | Required |
-| `JWT_SECRET` | Secret for JWT tokens (min 32 chars) | Required |
-| `ENCRYPTION_KEY` | AES-256 key for SMTP passwords | Required |
-| `ENCRYPTION_KEY_ID` | Key identifier for rotation | `default-key-v1` |
-| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:3000` |
-| `APP_URL` | App URL for email links | `http://localhost:3000` |
-| `STRIPE_SECRET_KEY` | Stripe API secret key | Optional |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhook signing secret | Optional |
-| `RUST_LOG` | Log level | `info` |
+- **Multi-tenant by design** — workspace isolation enforced at the SQL layer with row-level scoping; per-workspace usage limits, billing, and member roles
+- **Encrypted SMTP creds** — every email account row has its password sealed with AES-GCM via a versioned key (`ENCRYPTION_KEY_ID`)
+- **Inbox warmup scheduler** — gradual volume ramp with reply detection to protect domain reputation
+- **JWT auth, fail-fast** — token decode panics on missing `JWT_SECRET` rather than silently using a placeholder. Roles: owner / admin / member / viewer.
+- **Reply classifier** — Anthropic-backed intent tagging (interested / maybe later / objection / negative) drives the founder dashboard
+- **Stripe billing** — subscription webhooks, usage-based limits, signed webhook validation
+- **Compliance built-in** — one-click unsubscribe links, suppression lists, send-window enforcement
+- **Async job queue** — Postgres-backed worker for sends, replies, warmup ticks; survives restarts
 
 ## Architecture
 
-### Services
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  Next.js 14 frontend (App Router, server actions)                 │
+│  ─ login / register / dashboard / campaigns / warmup / billing    │
+└──────────────────────┬───────────────────────────────────────────┘
+                       │ JSON over HTTP (JWT cookie)
+                       ▼
+┌──────────────────────────────────────────────────────────────────┐
+│  Rust API service (Actix-Web 4)                                   │
+│  ┌────────────┐  ┌────────────┐  ┌──────────┐  ┌──────────────┐  │
+│  │ auth + JWT │  │ campaigns  │  │ billing  │  │ workspace    │  │
+│  └────────────┘  └────────────┘  └──────────┘  └──────────────┘  │
+│  middleware: auth, tenancy scoping, rate limiting                 │
+└──────────────────────┬───────────────────────────────────────────┘
+                       │ SQLx
+                       ▼
+              ┌─────────────────┐         ┌──────────────────────┐
+              │ Postgres 15     │←────────│ Worker service       │
+              │ • multi-tenant  │         │ • send loop          │
+              │ • RLS-style     │         │ • reply ingest       │
+              │   scoping       │         │ • warmup scheduler   │
+              └─────────────────┘         └──────────┬───────────┘
+                       ▲                              │
+                       │                              ▼
+                       │                   ┌────────────────────┐
+                       │                   │  SMTP (lettre)     │
+                       │                   │  decrypts creds    │
+                       │                   │  per send          │
+                       │                   └────────────────────┘
+                       │
+                ┌──────┴──────┐
+                │  Stripe     │  webhooks → subscription state
+                └─────────────┘
+```
 
-| Service | Port | Description |
-|---------|------|-------------|
-| `postgres` | 5432 | PostgreSQL database |
-| `backend` | 8080 | Rust API server |
-| `worker` | - | Background job processor |
-| `frontend` | 3000 | Next.js web app |
+## Tech stack
 
-### Worker Jobs
+| Layer | Tech |
+|-------|------|
+| API | Rust + Actix-Web 4, Tokio runtime |
+| DB | Postgres 15, SQLx (compile-time-checked queries) |
+| Auth | `jsonwebtoken`, Argon2 password hashing |
+| Crypto | `aes-gcm` for credential sealing |
+| Email | `lettre` SMTP client, custom warmup scheduler |
+| Frontend | Next.js 14 + Tailwind, Nord-themed dark UI |
+| Billing | Stripe webhooks (signed) |
+| Reply AI | Anthropic Claude classification |
+| Container | Multi-stage Dockerfile, distroless runtime |
 
-The worker binary (`outreachiq-worker`) processes:
-- **SendEmail** - Campaign email delivery via SMTP
-- **VerifyEmail** - Email address verification
-- **WarmupEmail** - Inbox warmup emails
-- **ProcessCampaign** - Campaign scheduling
+## Quick Start
 
-### Pricing Tiers
+```bash
+git clone https://github.com/ZUES-ops-dot/OutreachIQ.git
+cd OutreachIQ
+docker compose up
+```
 
-| Tier | Price | Leads/mo | Inboxes | Emails/mo |
-|------|-------|----------|---------|-----------|
-| Starter | $97 | 1,000 | 1 | 500 |
-| Professional | $297 | 10,000 | 5 | 5,000 |
-| Business | $997 | 50,000 | 20 | 25,000 |
+This brings up Postgres + the Rust API + the worker + the Next.js frontend. The first migration runs automatically.
 
-## API Endpoints
+Visit <http://localhost:3000> and register the first user — they become the owner of a fresh workspace.
 
-### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/auth/register` | Register new user |
-| POST | `/api/auth/login` | Login and get JWT |
-| GET | `/api/auth/me` | Get current user |
-| POST | `/api/auth/refresh` | Refresh JWT token |
+### Without Docker
 
-### Billing
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/billing/pricing` | Get pricing tiers |
-| POST | `/api/billing/checkout` | Create Stripe checkout |
-| POST | `/api/billing/portal` | Create billing portal session |
-| GET | `/api/billing/subscription` | Get current subscription |
-| GET | `/api/billing/usage` | Get usage stats |
+```bash
+# 1. Postgres running locally on :5432
+cd backend
+cp .env.example .env
+# Required: DATABASE_URL, JWT_SECRET, ENCRYPTION_KEY (base64 32 bytes)
+sqlx migrate run
+cargo run --bin api
+# In a second shell:
+cargo run --bin worker
 
-### Compliance
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/compliance/unsubscribe` | Handle unsubscribe (public) |
-| GET | `/api/compliance/suppression` | Get suppression list |
-| POST | `/api/compliance/suppression` | Add to suppression list |
-| DELETE | `/api/compliance/suppression/{email}` | Remove from suppression |
+# Frontend:
+cd ../frontend
+cp .env.example .env.local
+npm install && npm run dev
+```
+
+## Configuration
+
+| Variable | Purpose |
+|----------|---------|
+| `DATABASE_URL` | Postgres connection string |
+| `JWT_SECRET` | **Required.** Service panics if unset (no insecure fallback). |
+| `ENCRYPTION_KEY` | Base64-encoded 32-byte key for SMTP credential sealing |
+| `ENCRYPTION_KEY_ID` | Versioned key id for rotation |
+| `STRIPE_SECRET_KEY` | Optional billing |
+| `STRIPE_WEBHOOK_SECRET` | Signed webhook validation |
+| `APP_URL` | Used in unsubscribe + reply tracking links |
+
+Generate a fresh encryption key:
+
+```bash
+openssl rand -base64 32
+```
+
+## Repository layout
+
+```
+backend/
+  src/
+    api/                Routes (auth, campaigns, billing, email_accounts, ...)
+    middleware/         JWT + tenancy scoping
+    services/           Email sender, reply classifier, job queue
+    models/             SQLx-mapped row types
+    config.rs           Fail-fast env loader
+  migrations/           SQL migrations including multi-tenancy enforcement
+
+frontend/
+  app/                  Next.js App Router pages
+  components/           Reusable UI (Nord theme)
+
+docker-compose.yml      Full local stack
+Dockerfile              Multi-stage release build
+Dockerfile.worker       Worker variant
+```
+
+## Roadmap
+
+See [Issues](https://github.com/ZUES-ops-dot/OutreachIQ/issues) — A/B subject-line variants, SMTP connection-pool tuning, timezone-aware send window, dedicated job-queue crate.
 
 ## License
 
-MIT
-# OutreachIQ 
+MIT — see [LICENSE](LICENSE).
