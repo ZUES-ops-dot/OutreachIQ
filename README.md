@@ -1,4 +1,4 @@
-# OutreachIQ — Cold Email Engine in Rust
+# OutreachIQ -- Cold Email Engine in Rust
 
 ![Rust](https://img.shields.io/badge/Rust-1.75+-orange?logo=rust&logoColor=white)
 ![Actix](https://img.shields.io/badge/Actix--Web-4.x-000000)
@@ -24,14 +24,14 @@ Most cold-email tools (Mailshake, Lemlist, Instantly) are SaaS-only and lock you
 
 ## Highlights
 
-- **Multi-tenant by design** — workspace isolation enforced at the SQL layer with row-level scoping; per-workspace usage limits, billing, and member roles
-- **Encrypted SMTP creds** — every email account row has its password sealed with AES-GCM via a versioned key (`ENCRYPTION_KEY_ID`)
-- **Inbox warmup scheduler** — gradual volume ramp with reply detection to protect domain reputation
-- **JWT auth, fail-fast** — token decode panics on missing `JWT_SECRET` rather than silently using a placeholder. Roles: owner / admin / member / viewer.
-- **Reply classifier** — Anthropic-backed intent tagging (interested / maybe later / objection / negative) drives the founder dashboard
-- **Stripe billing** — subscription webhooks, usage-based limits, signed webhook validation
-- **Compliance built-in** — one-click unsubscribe links, suppression lists, send-window enforcement
-- **Async job queue** — Postgres-backed worker for sends, replies, warmup ticks; survives restarts
+- **Multi-tenant by design** -- workspace isolation enforced at the SQL layer with row-level scoping; per-workspace usage limits, billing, and member roles
+- **Encrypted SMTP creds** -- every email account row has its password sealed with AES-GCM via a versioned key (`ENCRYPTION_KEY_ID`)
+- **Inbox warmup scheduler** -- gradual volume ramp with reply detection to protect domain reputation
+- **JWT auth, fail-fast** -- token decode panics on missing `JWT_SECRET` rather than silently using a placeholder. Roles: owner / admin / member / viewer.
+- **Reply classifier** -- Anthropic-backed intent tagging (interested / maybe later / objection / negative) drives the founder dashboard
+- **Stripe billing** -- subscription webhooks, usage-based limits, signed webhook validation
+- **Compliance built-in** -- one-click unsubscribe links, suppression lists, send-window enforcement
+- **Async job queue** -- Postgres-backed worker for sends, replies, warmup ticks; survives restarts
 
 ## Architecture
 
@@ -94,7 +94,7 @@ docker compose up
 
 This brings up Postgres + the Rust API + the worker + the Next.js frontend. The first migration runs automatically.
 
-Visit <http://localhost:3000> and register the first user — they become the owner of a fresh workspace.
+Visit <http://localhost:3000> and register the first user -- they become the owner of a fresh workspace.
 
 ### Without Docker
 
@@ -155,8 +155,8 @@ Dockerfile.worker       Worker variant
 
 ## Roadmap
 
-See [Issues](https://github.com/ZUES-ops-dot/OutreachIQ/issues) — A/B subject-line variants, SMTP connection-pool tuning, timezone-aware send window, dedicated job-queue crate.
+See [Issues](https://github.com/ZUES-ops-dot/OutreachIQ/issues) -- A/B subject-line variants, SMTP connection-pool tuning, timezone-aware send window, dedicated job-queue crate.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT -- see [LICENSE](LICENSE).

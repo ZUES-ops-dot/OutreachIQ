@@ -93,7 +93,7 @@ where
             }
         };
 
-        // Decode and validate JWT — fail-fast if JWT_SECRET is unset to avoid
+        // Decode and validate JWT -- fail-fast if JWT_SECRET is unset to avoid
         // accepting tokens signed with a known placeholder secret in production.
         let jwt_secret = env::var("JWT_SECRET")
             .expect("JWT_SECRET must be set; refusing to start with a default secret");
